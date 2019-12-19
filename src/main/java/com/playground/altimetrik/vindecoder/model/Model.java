@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Model {
-    private Long id;
-    private String name;
+    private Integer makeID;
+    private String makeName;
+    private Integer modelID;
+    private String modelName;
 }

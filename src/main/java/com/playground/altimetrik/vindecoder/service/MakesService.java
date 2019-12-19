@@ -26,22 +26,14 @@ public class MakesService {
     String  getMakesURL = "https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/";
 
     @HystrixCommand(fallbackMethod = "reliable")
-    public String callingMakeService(String make) throws JSONException {
+    public String callingMakeService(String make) {
         log.info("Make calling started");
-        List<Model> models = new ArrayList<>();
-        List<Make> makes = new ArrayList<>();
-
         URI makeuri = URI.create(getMakesURL+make+"?format=json");
+        return this.restTemplate.getForObject(makeuri, String.class);
 
-        String decodedData = this.restTemplate.getForObject(makeuri, String.class);
-        JSONObject decodedJSON = new JSONObject(decodedData);
-
-
-        log.info("Make was succesful");
-        return null;
     }
 
-    public String reliable(String vin) {
+    public String reliable(String make) {
         log.error("You failed to hit the make url");
         return "There was an error in dispatching your makeService!! This is a circuit breaker";
     }

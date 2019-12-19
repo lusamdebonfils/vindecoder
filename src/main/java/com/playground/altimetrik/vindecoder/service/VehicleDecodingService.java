@@ -27,8 +27,6 @@ public class VehicleDecodingService {
     public String makesUrl;
 
     String decodeURL = "https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/";
-    String getMakesURI = "https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/multi?format=json";
-    String getModelsURI = "https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/bmw?format=json";
 
     private final RestTemplate restTemplate;
 
@@ -37,20 +35,10 @@ public class VehicleDecodingService {
     }
 
     @HystrixCommand(fallbackMethod = "reliable")
-    public String callingDecodingService(String vin) throws JSONException {
+    public String callingDecodingService(String vin){
         log.info("Decoding started");
-        List<Model> models = new ArrayList<>();
-        List<Make> makes = new ArrayList<>();
-
         URI decodeuri = URI.create(decodeURL+vin+"?format=json");
-
-        String decodedData = this.restTemplate.getForObject(decodeuri, String.class);
-        JSONObject decodedJSON = new JSONObject(decodedData);
-
-
-
-        log.info("Decoding was succesful");
-        return null;
+        return this.restTemplate.getForObject(decodeuri, String.class);
     }
 
     public String reliable(String vin) {
