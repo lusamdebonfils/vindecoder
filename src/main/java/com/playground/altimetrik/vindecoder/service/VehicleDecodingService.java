@@ -14,6 +14,12 @@ public class VehicleDecodingService {
     @Value("${DECODING_SERVICE}")
     public String decodingUrl;
 
+    @Value("${MODELS_SERVICE}")
+    public String modelsUrl;
+
+    @Value("${MAKES_SERVICE}")
+    public String makesUrl;
+
     private final RestTemplate restTemplate;
 
     public VehicleDecodingService(RestTemplate restTemplate){
@@ -22,13 +28,13 @@ public class VehicleDecodingService {
 
     @HystrixCommand(fallbackMethod = "reliable")
     public String callingExternalService(String vin) {
-        URI uri = URI.create("http://"+decodingUrl+"/"+vin);
-        System.out.println("I am Decoding guy ");
+        URI uri = URI.create("http://"+decodingUrl+"/"+vin+"?format=json");
+        log.info("I am Decoding guy ");
         return this.restTemplate.getForObject(uri, String.class);
     }
 
     public String reliable(String vin) {
-        System.out.println("You failed to hit the decoding url");
+        log.error("You failed to hit the decoding url");
         return "There was an error in dispatching your decorder!! This is a circuit breaker";
     }
 
