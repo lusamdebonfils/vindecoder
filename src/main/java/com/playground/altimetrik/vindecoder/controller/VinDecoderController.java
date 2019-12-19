@@ -16,7 +16,7 @@ public class VinDecoderController {
 
     @GetMapping("/api/vindecoder/service/{vin}")
     public String processVin(@PathVariable String vin) {
-        return vehicleDecodingService.callingExternalService(vin);
+        return vehicleDecodingService.callingDecodingService(vin);
     }
 
 
