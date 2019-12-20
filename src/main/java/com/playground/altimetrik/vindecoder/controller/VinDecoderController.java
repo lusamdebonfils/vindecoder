@@ -105,6 +105,7 @@ public class VinDecoderController {
         vehicle.setVehicleMakes(makes);
         vehicle.setVehicleModels(models);
         vehicles.add(vehicle);
+        log.info("vehicles : " + vehicles);
         return vehicles;
 
     }
