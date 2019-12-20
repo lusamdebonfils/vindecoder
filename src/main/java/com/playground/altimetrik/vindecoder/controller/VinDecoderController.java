@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,10 +36,12 @@ public class VinDecoderController {
 
     List<Model> models = new ArrayList<>();
     List<Make> makes = new ArrayList<>();
+    List<Vehicle> vehicles = new ArrayList<>();
 
-
-    @GetMapping("/api/vindecoder/service/{vin}")
-    public Vehicle processVin(@PathVariable String vin){
+    @Cacheable("vehicles")
+    @CrossOrigin
+    @GetMapping(value = "/api/vindecoder/service/{vin}", produces = "application/json")
+    public List<Vehicle> processVin(@PathVariable String vin){
         log.info("Passed in VIN is : "+vin);
         //Pass VIN and Decode
         String decodedData = callDecodingServ(vin);
@@ -58,7 +62,9 @@ public class VinDecoderController {
         JSONArray makesArray = makesJSON.getJSONArray("Results");
 
         for(int i = 0; i< makesArray.length(); i++){
-            JSONObject jsonObject = makesArray.getJSONObject(i);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject = makesArray.getJSONObject(i);
             Make make = new Make();
             make.setMakeID(jsonObject.getInt("MakeId"));
             make.setMakeName(jsonObject.getString("MakeName"));
@@ -73,7 +79,8 @@ public class VinDecoderController {
         JSONArray modelsArray = modelsJSON.getJSONArray("Results");
 
         for(int i = 0; i< modelsArray.length(); i++){
-            JSONObject jsonObject = modelsArray.getJSONObject(i);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject = modelsArray.getJSONObject(i);
             Model model = new Model();
             model.setMakeID(jsonObject.getInt("Make_ID"));
             model.setMakeName(jsonObject.getString("Make_Name"));
@@ -97,8 +104,8 @@ public class VinDecoderController {
 
         vehicle.setVehicleMakes(makes);
         vehicle.setVehicleModels(models);
-
-        return vehicle;
+        vehicles.add(vehicle);
+        return vehicles;
 
     }
 
